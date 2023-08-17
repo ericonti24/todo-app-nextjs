@@ -1,9 +1,37 @@
+"use client"
 
-
+import Head from "next/head";
+import { useState, useEffect } from "react";
+import ToDoForm from './components/ToDoForm'
+import { Button, ButtonGroup, VStack, Heading } from '@chakra-ui/react'
+import TasksList from './components/TasksList'
+import {supabase} from '../app/api/supabase'
+ 
 export default function Home() {
+
+  const [listToDos, setListToDos] = useState([])
+
+    const fetchData = async () => {
+        let { data: todos, error } = await supabase.from('todos').select('*')
+        console.log(todos);
+        setListToDos(todos)
+    }
+
+    useEffect(() => {
+        fetchData()
+    },[])
+ 
   return (
-   <>
-    Todo list
-   </>
-  )
+    <VStack p={4}>
+      <Head>
+        <title>To Do List</title>
+      </Head>
+      <Heading>
+        To Do List
+      </Heading>
+        <ToDoForm fetchData={fetchData}/>
+        
+        <TasksList fetchData={fetchData} listToDos={listToDos}/>
+    </VStack>
+  );
 }
